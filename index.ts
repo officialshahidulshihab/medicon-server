@@ -26,10 +26,20 @@ app.get('/', (req: Request, res: Response) => {
   res.json({ success: true, message: 'Medicon API is running' });
 });
 
-// Example: Get all users
-app.get('/users', async (req: Request, res: Response) => {
-  const users = await db.collection('users').find({}).toArray();
-  res.json(users);
+
+app.get('/doctors', async (req: Request, res: Response) => {
+  const doctors = await db.collection('doctors').find({}).sort({ createdAt: -1 }).limit(4).toArray();
+  res.json(doctors);
+});
+
+app.get('/all-doctors', async (req: Request, res: Response) => {
+  const doctors = await db.collection('doctors').find({}).toArray();
+  res.json(doctors);
+});
+
+app.get('/review', async (req: Request, res: Response) => {
+  const reviews = await db.collection('review').find({}).sort({ createdAt: -1 }).toArray();
+  res.json(reviews);
 });
 
 
@@ -44,7 +54,7 @@ const startServer = async (): Promise<void> => {
   try {
     await client.connect();
     await client.db('admin').command({ ping: 1 });
-    console.log('✅ Connected to MongoDB Atlas');
+    console.log(' Connected to MongoDB Atlas');
 
     db = client.db('medicon');
 
