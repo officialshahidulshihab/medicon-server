@@ -9,10 +9,7 @@ const MONGO_URI: string = process.env.MONGODB_URI || "medicon_atlas_uri_here";
 
 app.use(
   cors({
-     origin: [
-      "http://localhost:3000",
-      "https://medicon-three.vercel.app"
-    ],
+    origin: ["http://localhost:3000", "https://medicon-three.vercel.app"],
     credentials: true,
   }),
 );
@@ -35,6 +32,23 @@ const toObjectId = (id: string): ObjectId | null => {
 
 app.get("/", (_req: Request, res: Response) => {
   res.json({ success: true, message: "Medicon API is running" });
+});
+
+app.get("/doctors/by-user/:userId", async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const doctor = await db.collection("doctors").findOne({ userId });
+
+    if (!doctor) {
+      res.status(404).json({ message: "No listing found for this user." });
+      return;
+    }
+
+    res.json(doctor);
+  } catch (error) {
+    console.error("Error in GET /doctors/by-user/:userId:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 });
 
 app.get("/doctors", async (_req: Request, res: Response) => {
@@ -82,23 +96,6 @@ app.get("/all-doctors/:id", async (req: Request, res: Response) => {
     res.json(result);
   } catch (error) {
     console.error("Error in GET /all-doctors/:id:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
-app.get("/doctors/by-user/:userId", async (req: Request, res: Response) => {
-  try {
-    const { userId } = req.params;
-    const doctor = await db.collection("doctors").findOne({ userId });
-
-    if (!doctor) {
-      res.status(404).json({ message: "No listing found for this user." });
-      return;
-    }
-
-    res.json(doctor);
-  } catch (error) {
-    console.error("Error in GET /doctors/by-user/:userId:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 });
