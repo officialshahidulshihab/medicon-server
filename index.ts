@@ -9,7 +9,7 @@ const MONGO_URI: string = process.env.MONGODB_URI || "medicon_atlas_uri_here";
 
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: process.env.NEXT_PUBLIC_URL,
     credentials: true,
   }),
 );
